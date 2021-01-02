@@ -1,7 +1,6 @@
 function Onut(id, data, config) {
     this.template = '<div class="onut-container"> \
                         <svg width="100%" height="100%" viewBox="0 0 40 40" class="onut" style="transform:rotate(270deg);"> \
-                        <circle class="donut-ring" cx="20" cy="20" r="15.91549430918954" fill="transparent" stroke-width="3.5"></circle> \
                         </svg> \
                     </div>'    
                     
@@ -11,9 +10,11 @@ function Onut(id, data, config) {
     ]     
     
     this.width = config ? config.width ? config.width : 3.5 : 3.5;
+    this.animated = config ? config.animated ? config.animated : false : false;
+    this.legend = config ? config.legend ? config.legend : false : false;
                     
-    this.createCircle = function(color, value, offset) {
-        return '<circle class="onut-slice" cx="20" cy="20" r="15.91549430918954" fill="transparent" stroke="' + color +'" stroke-width="'+ this.width +'" stroke-dasharray="'+ value +' 100" stroke-dashoffset="'+ offset +'"></circle>'
+    this.createCircle = function(name, color, value, offset) {
+        return '<circle data-name="'+ name +'" class="onut-slice" cx="20" cy="20" r="15.91549430918954" fill="transparent" stroke="' + color +'" stroke-width="'+ this.width +'" stroke-dasharray="'+ value +' 100" stroke-dashoffset="'+ offset +'"></circle>'
     }       
 
     this.generateNumber = function(min, max) {
@@ -48,6 +49,7 @@ function Onut(id, data, config) {
         document.getElementById(id).innerHTML = this.template;
 
         for(let i=0; i < above_threshold.length; i++) {
+            var name = above_threshold[i].name;
             var val = (data[i].value / total) * 100;
             var color_index = this.generateNumber(0, this.colors.length - 1);
             var color = data[i].color ? data[i].color : this.colors[color_index];
@@ -58,13 +60,31 @@ function Onut(id, data, config) {
 
             used_colors.push(color);
 
-            document.querySelector("#" + id + " .onut-container svg").innerHTML += this.createCircle(color, val, -offset_val);
+            document.querySelector("#" + id + " .onut-container svg").innerHTML += this.createCircle(name, color, val, -offset_val);
             offset_val = offset_val + val
         }
 
         if(below_threshold.length > 0) {
             var others_val = below_threshold.reduce((acc, item) => acc + item);
-            document.querySelector("#" + id + " .onut-container svg").innerHTML += this.createCircle(this.colors[this.generateNumber(0, this.colors.length - 1)], others_val, -offset_val);
+            document.querySelector("#" + id + " .onut-container svg").innerHTML += this.createCircle("Others", this.colors[this.generateNumber(0, this.colors.length - 1)], others_val, -offset_val);
+        }
+
+        if(this.legend) {
+            var circles = document.querySelectorAll("#" + id + " .onut-container svg circle");
+            var legend = "<div class='onut-legend' style='display: flex; width: 100%;'></div>";
+            document.querySelector("#" + id + " .onut-container").innerHTML += legend;
+
+            for(let i=0; i < circles.length; i++) {
+                var name = circles[i].getAttribute("data-name");
+                var color = circles[i].getAttribute("stroke");
+
+                document.querySelector("#" + id + " .onut-container .onut-legend").innerHTML += ' \
+                    <div class="onut-legend-item" style="flex: 1;"> \
+                        <div class="onut-legend-name" style="width: 100%; text-align: center; margin-bottom: 5px">'+ name +'</div> \
+                        <div class="onut-legend-color" style="background:'+ color +' ;height: 10px;"></div> \
+                    </div> \
+                '
+            }
         }
     }
 }
@@ -72,23 +92,29 @@ function Onut(id, data, config) {
 
 new Onut("onut-demo", [
     {
+        name: "Demo 1",
         value: 40,
         color: "#B4D2BA"
     },
     {
+        name: "Demo 2",
         value: 25
     },
     {
+        name: "Demo 3",
         value: 20
     },
     {
+        name: "Demo 4",
         value: 10
     },
     {
+        name: "Demo 5",
         value: 5
     }
 ], 
 {
     width: 3,
-    threshold: 10
+    threshold: 10,
+    legend: true
 }).draw();
