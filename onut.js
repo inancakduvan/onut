@@ -79,7 +79,7 @@ function Onut(id, data, config) {
                 var color = circles[i].getAttribute("stroke");
 
                 document.querySelector("#" + id + " .onut-container .onut-legend").innerHTML += ' \
-                    <div class="onut-legend-item" style="flex: 1;"> \
+                    <div class="onut-legend-item" style="flex: 1; margin: 0 5px;"> \
                         <div class="onut-legend-name" style="width: 100%; text-align: center; margin-bottom: 5px">'+ name +'</div> \
                         <div class="onut-legend-color" style="background:'+ color +' ;height: 10px;"></div> \
                     </div> \
