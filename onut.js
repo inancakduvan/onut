@@ -14,8 +14,72 @@ function Onut(id, data, config) {
     this.legend = config ? config.legend ? config.legend : false : false;
                     
     this.createCircle = function(name, color, value, offset) {
-        return '<circle data-name="'+ name +'" class="onut-slice" cx="20" cy="20" r="15.91549430918954" fill="transparent" stroke="' + color +'" stroke-width="'+ this.width +'" stroke-dasharray="'+ value +' 100" stroke-dashoffset="'+ offset +'"></circle>'
-    }       
+        return '<circle style="pointer-events:stroke; transition: 0.3s;" data-name="'+ name +'" class="onut-slice" cx="20" cy="20" r="15.91549430918954" fill="transparent" stroke="' + color +'" stroke-width="'+ this.width +'" stroke-dasharray="'+ value +' 100" stroke-dashoffset="'+ offset +'"></circle>'
+    }   
+
+    this.animate2 = function(e) {
+        var parent = document.querySelector("#" + id + " svg");
+        var all = document.querySelectorAll("#" + id + " svg circle");
+        var width = parseFloat(e.target.getAttribute("stroke-width"));
+
+        for(let k=0; k < all.length; k++) {
+            all[k].style.strokeWidth = width;
+            all[k].style.strokeLinecap = "butt";
+        }
+
+        var clone = e.target.cloneNode(true);
+        clone.style.strokeWidth = width + 1;
+        clone.style.strokeLinecap = "round";
+        clone.addEventListener("click", this);
+
+        e.target.remove();
+
+        parent.appendChild(clone);
+
+        console.log("sad", e.target)
+    }
+
+    var again = function(e) {
+        var parent = document.querySelector("#" + id + " svg");
+        var all = document.querySelectorAll("#" + id + " svg circle");
+        var width = parseFloat(e.target.getAttribute("stroke-width"));
+
+        for(let k=0; k < all.length; k++) {
+            all[k].style.strokeWidth = width;
+            all[k].style.strokeLinecap = "butt";
+        }
+
+        var clone = e.target.cloneNode(true);
+        clone.style.strokeWidth = width + 1;
+        clone.style.strokeLinecap = "round";
+        console.log(e)
+
+        e.target.remove();
+
+        parent.appendChild(clone);
+    }
+
+    this.animate = function(e) {
+        var parent = document.querySelector("#" + id + " svg");
+        var all = document.querySelectorAll("#" + id + " svg circle");
+        var width = parseFloat(e.target.getAttribute("stroke-width"));
+
+
+        for(let k=0; k < all.length; k++) {
+            all[k].style.strokeWidth = width;
+            all[k].style.strokeLinecap = "butt";
+        }
+
+        // var clone = e.target.cloneNode(true);
+        // clone.style.strokeWidth = width + 1;
+        // clone.style.strokeLinecap = "round";
+
+        // e.target.remove();
+
+        // parent.appendChild(clone);
+
+        e.target.style.strokeWidth = width + 1;
+    }
 
     this.generateNumber = function(min, max) {
         return Math.floor(
@@ -86,7 +150,20 @@ function Onut(id, data, config) {
                 '
             }
         }
+
+        if(this.animated) {
+            var animate = this.animate;
+            var circles = document.querySelectorAll("#" + id + " svg circle");
+
+            for(let i = 0; i < circles.length; i++) {
+                circles[i].addEventListener("click", function(e) {
+                    animate(e);
+                })
+            }
+        }
     }
+
+    
 }
 
 
@@ -116,5 +193,7 @@ new Onut("onut-demo", [
 {
     width: 3,
     threshold: 10,
-    legend: true
+    legend: true,
+    animated: true
 }).draw();
+
