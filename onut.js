@@ -23,17 +23,31 @@ function Onut(id, data, config) {
     }
     
     this.draw = function() {
+        var above_threshold = [];
+        var below_threshold = [];
         var offset_val = 0;
         var total = 0;
         var used_colors = [];
 
         for(let i=0; i < data.length; i++) {
-            total = total +data[i].value;
+            var val = data[i].value
+
+            total = total + val;
+        }
+
+        for(let i=0; i < data.length; i++) {
+            var val = (data[i].value / total) * 100;
+
+            if(config && config.threshold && val <= config.threshold) {
+                below_threshold.push(val);
+            } else {
+                above_threshold.push(data[i]);
+            }
         }
     
         document.getElementById(id).innerHTML = this.template;
 
-        for(let i=0; i < data.length; i++) {
+        for(let i=0; i < above_threshold.length; i++) {
             var val = (data[i].value / total) * 100;
             var color_index = this.generateNumber(0, this.colors.length - 1);
             var color = data[i].color ? data[i].color : this.colors[color_index];
@@ -47,28 +61,34 @@ function Onut(id, data, config) {
             document.querySelector("#" + id + " .onut-container svg").innerHTML += this.createCircle(color, val, -offset_val);
             offset_val = offset_val + val
         }
+
+        if(below_threshold.length > 0) {
+            var others_val = below_threshold.reduce((acc, item) => acc + item);
+            document.querySelector("#" + id + " .onut-container svg").innerHTML += this.createCircle(this.colors[this.generateNumber(0, this.colors.length - 1)], others_val, -offset_val);
+        }
     }
 }
 
 
 new Onut("onut-demo", [
     {
-        value: 250,
+        value: 40,
         color: "#B4D2BA"
     },
     {
-        value: 150
+        value: 25
     },
     {
-        value: 400
+        value: 20
     },
     {
-        value: 200
+        value: 10
     },
     {
-        value: 120
+        value: 5
     }
 ], 
 {
-    width: 3
+    width: 3,
+    threshold: 10
 }).draw();
