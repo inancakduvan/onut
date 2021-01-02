@@ -5,13 +5,25 @@ function Onut(id, data) {
                         </svg> \
                     </div>'    
                     
+      
+    this.colors =["#8ED081", "#B4D2BA", "#DCE2AA", "#B57F50", "#4B543B", "#e63946", "#a8dadc", "#457b9d", "#1d3557", "#fca311", "#e29578", "#560bad", "#fec89a", "#ffb5a7", "#f77f00",
+        "#9b5de5", "#f15bb5", "#fee440", "#e26d5c", "#723d46", "#472d30", "#c9cba3", "#ffe1a8", "#9e2a2b", "#353535", "#344e41", "#e2afff", "#f3c4fb"
+    ]                
+                    
     this.createCircle = function(color, value, offset) {
         return '<circle class="onut-slice" cx="20" cy="20" r="15.91549430918954" fill="transparent" stroke="' + color +'" stroke-width="3.5" stroke-dasharray="'+ value +' 100" stroke-dashoffset="'+ offset +'"></circle>'
     }       
+
+    this.generateNumber = function(min, max) {
+        return Math.floor(
+        Math.random() * (max - min) + min
+        )
+    }
     
     this.draw = function() {
         var offset_val = 0;
         var total = 0;
+        var used_colors = [];
 
         for(let i=0; i < data.length; i++) {
             total = total +data[i].value;
@@ -21,8 +33,16 @@ function Onut(id, data) {
 
         for(let i=0; i < data.length; i++) {
             var val = (data[i].value / total) * 100;
+            var color_index = this.generateNumber(0, this.colors.length - 1);
+            var color = data[i].color ? data[i].color : this.colors[color_index];
 
-            document.querySelector("#" + id + " .onut-container svg").innerHTML += this.createCircle(data[i].color, val, -offset_val);
+            if(used_colors.includes(color)) {
+                color = this.colors[this.generateNumber(0, this.colors.length - 1)];
+            }
+
+            used_colors.push(color);
+
+            document.querySelector("#" + id + " .onut-container svg").innerHTML += this.createCircle(color, val, -offset_val);
             offset_val = offset_val + val
         }
     }
@@ -31,15 +51,16 @@ function Onut(id, data) {
 
 new Onut("onut-demo", [
     {
-        value: 124,
-        color: "red"
+        value: 250,
+        color: "#B4D2BA"
     },
     {
-        value: 74,
-        color: "salmon"
+        value: 150
     },
     {
-        value: 214,
-        color: "green"
+        value: 400
+    },
+    {
+        value: 200
     }
 ]).draw();
