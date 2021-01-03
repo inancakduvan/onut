@@ -70,7 +70,7 @@ function Onut(id, data, config) {
             }
         }
     
-        document.getElementById(id).innerHTML = this.template;
+        document.querySelector("#" + id).innerHTML = this.template;
 
         for(let i=0; i < above_threshold.length; i++) {
             var name = above_threshold[i].name;
