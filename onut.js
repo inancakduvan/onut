@@ -10,11 +10,15 @@ function Onut(id, data, config) {
     ]     
     
     this.width = config ? config.width ? config.width : 3.5 : 3.5;
+    this.spacing = config ? config.spacing ? config.spacing : 0 : 0;
     this.animated = config ? config.animated ? config.animated : false : false;
     this.legend = config ? config.legend ? config.legend : false : false;
                     
-    this.createCircle = function(name, color, value, offset) {
-        return '<circle style="pointer-events:stroke; transition: 0.3s;" data-name="'+ name +'" class="onut-slice" cx="20" cy="20" r="15.91549430918954" fill="transparent" stroke="' + color +'" stroke-width="'+ this.width +'" stroke-dasharray="'+ value +' 100" stroke-dashoffset="'+ offset +'"></circle>'
+    this.createCircle = function(name, color, value, offset, spacing) {
+        var pad = spacing ? spacing : 0;
+        var val = value - pad;
+        var off = offset + pad;
+        return '<circle style="pointer-events:stroke; transition: 0.3s;" data-name="'+ name +'" class="onut-slice" cx="20" cy="20" r="15.91549430918954" fill="transparent" stroke="' + color +'" stroke-width="'+ this.width +'" stroke-dasharray="'+ val +' 100" stroke-dashoffset="'+ off +'"></circle>'
     }   
 
     function insertAfter(newNode, existingNode) {
@@ -34,7 +38,7 @@ function Onut(id, data, config) {
 
         e.target.style.strokeWidth = width + 1;
         e.target.style.strokeLinecap = "round";
-        insertAfter(e.target, parent.lastChild)
+        insertAfter(e.target, parent.lastChild);
         parent.insertAfter(e.target, parent.firstChild);
     }
 
@@ -81,13 +85,18 @@ function Onut(id, data, config) {
 
             used_colors.push(color);
 
-            document.querySelector("#" + id + " .onut-container svg").innerHTML += this.createCircle(name, color, val, -offset_val);
+            if(below_threshold.length == 0 && i == above_threshold.length - 1) {
+                document.querySelector("#" + id + " .onut-container svg").innerHTML += this.createCircle(name, color, val + this.spacing, -offset_val, this.spacing);
+            } else {
+                document.querySelector("#" + id + " .onut-container svg").innerHTML += this.createCircle(name, color, val, -offset_val, this.spacing);
+            }
+
             offset_val = offset_val + val
         }
 
         if(below_threshold.length > 0) {
             var others_val = below_threshold.reduce((acc, item) => acc + item);
-            document.querySelector("#" + id + " .onut-container svg").innerHTML += this.createCircle("Others", this.colors[this.generateNumber(0, this.colors.length - 1)], others_val, -offset_val);
+            document.querySelector("#" + id + " .onut-container svg").innerHTML += this.createCircle("Others", this.colors[this.generateNumber(0, this.colors.length - 1)], others_val + this.spacing, -offset_val, this.spacing);
         }
 
         if(this.legend) {
@@ -149,6 +158,7 @@ new Onut("onut-demo", [
 ], 
 {
     width: 3,
+    spacing: 0.5,
     threshold: 10,
     legend: true,
     animated: true
