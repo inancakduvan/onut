@@ -120,11 +120,7 @@ function Onut(id, data, config) {
 
         if(this.animated) {
             var animate = this.animate;
-            var bb = document.querySelector("#" + id + " .onut-container");;
             var circles = document.querySelectorAll("#" + id + " svg circle");
-
-            var colors = this.colors;
-            var gen = this.generateNumber;
 
             for(let i = 0; i < circles.length; i++) {
                 circles[i].addEventListener("click", function(e) {                    
