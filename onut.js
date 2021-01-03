@@ -1,5 +1,5 @@
 function Onut(id, data, config) {
-    this.template = '<div class="onut-container"> \
+    this.template = '<div class="onut-container" style="position:relative;"> \
                         <svg width="100%" height="100%" viewBox="0 0 40 40" class="onut" style="transform:rotate(270deg);"> \
                         </svg> \
                     </div>'    
@@ -34,10 +34,12 @@ function Onut(id, data, config) {
         for(let k=0; k < all.length; k++) {
             all[k].style.strokeWidth = width;
             all[k].style.strokeLinecap = "butt";
+            all[k].style.opacity = 0.5;
         }
 
         e.target.style.strokeWidth = width + 1;
         e.target.style.strokeLinecap = "round";
+        e.target.style.opacity = 1;
         insertAfter(e.target, parent.lastChild);
     }
 
@@ -118,10 +120,14 @@ function Onut(id, data, config) {
 
         if(this.animated) {
             var animate = this.animate;
+            var bb = document.querySelector("#" + id + " .onut-container");;
             var circles = document.querySelectorAll("#" + id + " svg circle");
 
+            var colors = this.colors;
+            var gen = this.generateNumber;
+
             for(let i = 0; i < circles.length; i++) {
-                circles[i].addEventListener("click", function(e) {
+                circles[i].addEventListener("click", function(e) {                    
                     animate(e);
                 })
             }
@@ -157,7 +163,7 @@ new Onut("onut-demo", [
 ], 
 {
     width: 3,
-    spacing: 0.5,
+    spacing: 0.1,
     threshold: 10,
     legend: true,
     animated: true
