@@ -1,6 +1,8 @@
 function Onut(id, data, config) {
     this.template = '<div class="onut-container" style="position:relative;"> \
                         <svg width="100%" height="100%" viewBox="0 0 40 40" class="onut" style="transform:rotate(270deg);"> \
+                           <defs> \
+                           </defs> \
                         </svg> \
                     </div>'    
                     
@@ -84,6 +86,19 @@ function Onut(id, data, config) {
                 color = this.colors[this.generateNumber(0, this.colors.length - 1)];
             }
 
+            if(color.includes("linear")) {
+                var defs = document.querySelector("#" + id + " .onut-container svg defs");
+                var color_id = "defs" + i;
+                var begin = color.split("linear(")[1].split(",")[0];
+                var end = color.split(")")[0].split(",")[1];
+
+                defs.innerHTML += ' \
+                <linearGradient x1="0" x2="0" y1="0" y2="100%" id="'+ color_id +'"><stop offset="0%" stop-color="'+ begin +'"></stop><stop offset="100%" stop-color="'+ end +'"></stop></linearGradient> \
+                '
+
+                color = "url(#"+ color_id +")";
+            }
+
             used_colors.push(color);
 
             if(below_threshold.length == 0 && i == above_threshold.length - 1) {
@@ -108,6 +123,15 @@ function Onut(id, data, config) {
             for(let i=0; i < circles.length; i++) {
                 var name = circles[i].getAttribute("data-name");
                 var color = circles[i].getAttribute("stroke");
+
+                if(color.includes("(#")) {
+                    var linear_id = color.split("(#")[1].split(")")[0];
+                    var linear = document.querySelector("#" + id + " .onut-container svg defs #" + linear_id);
+                    var begin = linear.childNodes[0].getAttribute("stop-color");
+                    var end = linear.childNodes[1].getAttribute("stop-color");
+
+                    color = "linear-gradient(to right, "+ begin +", "+ end +")";
+                }
 
                 document.querySelector("#" + id + " .onut-container .onut-legend").innerHTML += ' \
                     <div class="onut-legend-item" style="flex: 1; margin: 0 5px;"> \
@@ -142,7 +166,8 @@ new Onut("onut-demo", [
     },
     {
         name: "Demo 2",
-        value: 25
+        value: 25,
+        color: "linear(#00ff87, #60efff)"
     },
     {
         name: "Demo 3",
