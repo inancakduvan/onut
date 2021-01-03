@@ -17,46 +17,8 @@ function Onut(id, data, config) {
         return '<circle style="pointer-events:stroke; transition: 0.3s;" data-name="'+ name +'" class="onut-slice" cx="20" cy="20" r="15.91549430918954" fill="transparent" stroke="' + color +'" stroke-width="'+ this.width +'" stroke-dasharray="'+ value +' 100" stroke-dashoffset="'+ offset +'"></circle>'
     }   
 
-    this.animate2 = function(e) {
-        var parent = document.querySelector("#" + id + " svg");
-        var all = document.querySelectorAll("#" + id + " svg circle");
-        var width = parseFloat(e.target.getAttribute("stroke-width"));
-
-        for(let k=0; k < all.length; k++) {
-            all[k].style.strokeWidth = width;
-            all[k].style.strokeLinecap = "butt";
-        }
-
-        var clone = e.target.cloneNode(true);
-        clone.style.strokeWidth = width + 1;
-        clone.style.strokeLinecap = "round";
-        clone.addEventListener("click", this);
-
-        e.target.remove();
-
-        parent.appendChild(clone);
-
-        console.log("sad", e.target)
-    }
-
-    var again = function(e) {
-        var parent = document.querySelector("#" + id + " svg");
-        var all = document.querySelectorAll("#" + id + " svg circle");
-        var width = parseFloat(e.target.getAttribute("stroke-width"));
-
-        for(let k=0; k < all.length; k++) {
-            all[k].style.strokeWidth = width;
-            all[k].style.strokeLinecap = "butt";
-        }
-
-        var clone = e.target.cloneNode(true);
-        clone.style.strokeWidth = width + 1;
-        clone.style.strokeLinecap = "round";
-        console.log(e)
-
-        e.target.remove();
-
-        parent.appendChild(clone);
+    function insertAfter(newNode, existingNode) {
+        existingNode.parentNode.insertBefore(newNode, existingNode.nextSibling);
     }
 
     this.animate = function(e) {
@@ -70,15 +32,10 @@ function Onut(id, data, config) {
             all[k].style.strokeLinecap = "butt";
         }
 
-        // var clone = e.target.cloneNode(true);
-        // clone.style.strokeWidth = width + 1;
-        // clone.style.strokeLinecap = "round";
-
-        // e.target.remove();
-
-        // parent.appendChild(clone);
-
         e.target.style.strokeWidth = width + 1;
+        e.target.style.strokeLinecap = "round";
+        insertAfter(e.target, parent.lastChild)
+        parent.insertAfter(e.target, parent.firstChild);
     }
 
     this.generateNumber = function(min, max) {
