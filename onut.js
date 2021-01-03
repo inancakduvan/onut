@@ -39,7 +39,6 @@ function Onut(id, data, config) {
         e.target.style.strokeWidth = width + 1;
         e.target.style.strokeLinecap = "round";
         insertAfter(e.target, parent.lastChild);
-        parent.insertAfter(e.target, parent.firstChild);
     }
 
     this.generateNumber = function(min, max) {
